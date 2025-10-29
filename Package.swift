@@ -22,7 +22,10 @@ let package = Package(
                 .target(name: "VLCKit-all")
             ],
             path: "Sources/VLCAudioBridge",
-            publicHeadersPath: "include"
+            publicHeadersPath: "include",
+            cSettings: [
+                .headerSearchPath("Sources/VLCAudioBridge/include")
+            ]
         ),
         .target(
             name: "VLCKitSPM",

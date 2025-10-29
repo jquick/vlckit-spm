@@ -1,5 +1,6 @@
 module VLCAudioBridge {
     header "VLCAudioBridge.h"
+    header "VLCAudioBridgeHelper.h"
     export *
 }
 

@@ -15,6 +15,7 @@ import VLCKit
 
 import VLCAudioBridge
 import Foundation
+import ObjectiveC
 
 /// Audio level information
 public struct AudioLevel {
@@ -276,43 +277,24 @@ extension VLCMediaPlayer {
     /// Set audio callbacks for this media player
     /// - Parameter callbacks: The audio callbacks to use
     /// - Note: This method wraps the libvlc_audio_set_callbacks C function
-    ///         It uses runtime introspection to access the underlying libvlc_media_player_t pointer
+    ///         It uses Objective-C runtime to access the underlying libvlc_media_player_t pointer
     public func setAudioCallbacks(_ callbacks: VLCAudioCallbacks) {
-        // Access the underlying player pointer using Objective-C runtime
-        // VLCMediaPlayer stores the pointer in an internal property
-        var mp: OpaquePointer?
-        
-        // Try common property names used by VLCKit
-        if let playerValue = self.value(forKey: "player") as? NSValue {
-            playerValue.getValue(&mp)
-        } else if let playerValue = self.value(forKey: "_player") as? NSValue {
-            playerValue.getValue(&mp)
-        } else if let playerValue = self.value(forKey: "instance") as? NSValue {
-            playerValue.getValue(&mp)
-        }
-        
-        guard let player = mp else {
+        // Use the Objective-C helper to get the underlying pointer
+        guard let playerPtr = VLCGetMediaPlayerPointer(self) else {
             print("Warning: Could not access underlying libvlc_media_player_t pointer from VLCMediaPlayer")
             return
         }
         
-        setVLCAudioCallbacks(player: player, callbacks: callbacks)
+        setVLCAudioCallbacks(player: OpaquePointer(playerPtr), callbacks: callbacks)
     }
     
     /// Get the underlying libvlc_media_player_t pointer
     /// - Returns: The opaque pointer to the libvlc media player, or nil if unavailable
     public func getMediaPlayerPointer() -> OpaquePointer? {
-        var mp: OpaquePointer?
-        
-        if let playerValue = self.value(forKey: "player") as? NSValue {
-            playerValue.getValue(&mp)
-        } else if let playerValue = self.value(forKey: "_player") as? NSValue {
-            playerValue.getValue(&mp)
-        } else if let playerValue = self.value(forKey: "instance") as? NSValue {
-            playerValue.getValue(&mp)
+        guard let playerPtr = VLCGetMediaPlayerPointer(self) else {
+            return nil
         }
-        
-        return mp
+        return OpaquePointer(playerPtr)
     }
 }
 
