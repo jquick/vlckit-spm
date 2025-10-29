@@ -17,9 +17,18 @@ let package = Package(
     targets: [
         vlcBinary,
         .target(
-            name: "VLCKitSPM",
+            name: "VLCAudioBridge",
             dependencies: [
                 .target(name: "VLCKit-all")
+            ],
+            path: "Sources/VLCAudioBridge",
+            publicHeadersPath: "include"
+        ),
+        .target(
+            name: "VLCKitSPM",
+            dependencies: [
+                .target(name: "VLCKit-all"),
+                .target(name: "VLCAudioBridge")
             ], linkerSettings: [
                 .linkedFramework("QuartzCore", .when(platforms: [.iOS])),
                 .linkedFramework("CoreText", .when(platforms: [.iOS, .tvOS])),
